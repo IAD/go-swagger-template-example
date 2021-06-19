@@ -39,4 +39,4 @@ gen-client:
 		-t $(CLIENT_PATH_FULL)
 
 lint:
-	docker run --rm -v $(PWD):$(PWD) -w $(PWD) golangci/golangci-lint:v1.27.0 golangci-lint run -v
+	docker run --rm -v $(PWD):$(PWD) -w $(PWD) -u `id -u $(USER)` -e GOLANGCI_LINT_CACHE=/tmp/.cache -e GOCACHE=/tmp/.cache golangci/golangci-lint:v1.41.0 golangci-lint run -v --fix

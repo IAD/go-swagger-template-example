@@ -95,7 +95,7 @@ func (h *Handlers) FindHandler(
 
 	result := make([]*models.Item, 0, limit)
 
-	foundItems := int64(0)
+	counter := int64(0)
 
 SEARCH:
 	for id, item := range h.items {
@@ -106,15 +106,16 @@ SEARCH:
 					Description: swag.String(item.Description),
 					ID:          id,
 				})
-				foundItems++
-				if foundItems >= limit {
+
+				counter++
+				if counter >= limit {
 					break SEARCH
 				}
 			}
 		}
 	}
 
-	if foundItems == 0 {
+	if counter == 0 {
 		return findNotFound().WithErr(fmt.Errorf("not found"))
 	}
 

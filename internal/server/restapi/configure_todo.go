@@ -6,13 +6,12 @@ import (
 	"crypto/tls"
 	"net/http"
 
+	"github.com/IAD/go-swagger-template-example/internal/server/restapi/operations"
+	"github.com/IAD/go-swagger-template-example/internal/server/restapi/operations/todos"
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 	"github.com/rs/cors"
-
-	"github.com/IAD/go-swagger-template-example/internal/server/restapi/operations"
-	"github.com/IAD/go-swagger-template-example/internal/server/restapi/operations/todos"
 )
 
 //go:generate swagger generate server --target ../../server --name Todo --spec ../../../swagger.yml --template-dir /tmp/templates --exclude-main
@@ -35,14 +34,14 @@ func configureAPI(api *operations.TodoAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	// Handler for POST / .
+	// Handler for POST /
 	api.TodosAddOneHandler = todos.AddOneHandlerFunc(func(params *todos.AddOneParams,
 		addOneCreated todos.NewAddOneCreatedFunc,
 		addOneInternalServerError todos.NewAddOneInternalServerErrorFunc,
 	) middleware.Responder {
 		return middleware.NotImplemented("operation todos.AddOne has not yet been implemented")
 	})
-	// Handler for DELETE /{id} .
+	// Handler for DELETE /{id}
 	api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(func(params *todos.DestroyOneParams,
 		destroyOneNoContent todos.NewDestroyOneNoContentFunc,
 		destroyOneNotFound todos.NewDestroyOneNotFoundFunc,
@@ -50,7 +49,7 @@ func configureAPI(api *operations.TodoAPI) http.Handler {
 	) middleware.Responder {
 		return middleware.NotImplemented("operation todos.DestroyOne has not yet been implemented")
 	})
-	// Handler for GET / .
+	// Handler for GET /
 	api.TodosFindHandler = todos.FindHandlerFunc(func(params *todos.FindParams,
 		findOK todos.NewFindOKFunc,
 		findNotFound todos.NewFindNotFoundFunc,
@@ -58,7 +57,7 @@ func configureAPI(api *operations.TodoAPI) http.Handler {
 	) middleware.Responder {
 		return middleware.NotImplemented("operation todos.Find has not yet been implemented")
 	})
-	// Handler for PUT /{id} .
+	// Handler for PUT /{id}
 	api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params *todos.UpdateOneParams,
 		updateOneOK todos.NewUpdateOneOKFunc,
 		updateOneNotFound todos.NewUpdateOneNotFoundFunc,

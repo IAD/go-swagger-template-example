@@ -16,6 +16,9 @@ import (
 )
 
 func TestTodo(t *testing.T) {
+	t.Parallel()
+
+	// nolint: exhaustivestruct
 	suite.Run(t, &Suite{})
 }
 
@@ -23,8 +26,8 @@ type Suite struct {
 	suite.Suite
 
 	client *todoclient.Todo
-
 	logger *logrus.Entry
+	fuzzer *fuzz.Fuzzer
 }
 
 func (s *Suite) SetupTest() {
@@ -47,20 +50,19 @@ func (s *Suite) SetupTest() {
 
 	client := todoclient.NewClientWithBasePath(fmt.Sprintf("%s:%v", "localhost", service.Port), "")
 
+	s.fuzzer = fuzz.New().NilChance(0).Funcs(func(i *string, c fuzz.Continue) {
+		*i = fmt.Sprintf("%s*", c.RandString())
+	})
 	s.logger = logger
 	s.client = client
 }
 
 func (s *Suite) TestAddOneHandler() {
-	f := fuzz.New().NilChance(0)
-
 	var item Item
-
-	f.Fuzz(&item)
+	s.fuzzer.Fuzz(&item)
 
 	var id int64
-
-	f.Fuzz(&id)
+	s.fuzzer.Fuzz(&id)
 
 	addOneCreated, addOneInternalServerError, err := s.client.Todos.AddOne(
 		&todos.AddOneParams{
@@ -85,15 +87,11 @@ func (s *Suite) TestAddOneHandler() {
 }
 
 func (s *Suite) TestAddAndUpdateOneHandler() {
-	f := fuzz.New().NilChance(0)
-
 	var item Item
-
-	f.Fuzz(&item)
+	s.fuzzer.Fuzz(&item)
 
 	var id int64
-
-	f.Fuzz(&id)
+	s.fuzzer.Fuzz(&id)
 
 	addOneCreated, addOneInternalServerError, err := s.client.Todos.AddOne(
 		&todos.AddOneParams{
@@ -118,8 +116,8 @@ func (s *Suite) TestAddAndUpdateOneHandler() {
 
 	// update item
 	updatedItem := *payload
+	s.fuzzer.Fuzz(&updatedItem)
 
-	f.Fuzz(&updatedItem)
 	updatedItem.ID = id
 
 	updateOneOK, updateOneNotFound, updateOneInternalServerError, err := s.client.Todos.UpdateOne(&todos.UpdateOneParams{
@@ -153,14 +151,12 @@ func (s *Suite) FindHandler() {
 
 	var id1, id2, id3 int64
 
-	f := fuzz.New().NilChance(0)
-
 	// add an item
 	{
-		f.Fuzz(&item1)
+		s.fuzzer.Fuzz(&item1)
 		item1.Description += criteria1
 
-		f.Fuzz(&id1)
+		s.fuzzer.Fuzz(&id1)
 
 		addOneCreated, addOneInternalServerError, err := s.client.Todos.AddOne(
 			&todos.AddOneParams{
@@ -186,10 +182,10 @@ func (s *Suite) FindHandler() {
 
 	// add 2-nd item
 	{
-		f.Fuzz(&item2)
+		s.fuzzer.Fuzz(&item2)
 		item2.Description = item2.Description[:len(item2.Description)/2] + criteria2 + item2.Description[len(item2.Description)/2:]
 
-		f.Fuzz(&id2)
+		s.fuzzer.Fuzz(&id2)
 
 		addOneCreated, addOneInternalServerError, err := s.client.Todos.AddOne(
 			&todos.AddOneParams{
@@ -215,10 +211,10 @@ func (s *Suite) FindHandler() {
 
 	// add 3-rd item
 	{
-		f.Fuzz(&item3)
+		s.fuzzer.Fuzz(&item3)
 		item3.Description = criteria3 + item3.Description
 
-		f.Fuzz(&id3)
+		s.fuzzer.Fuzz(&id3)
 
 		addOneCreated, addOneInternalServerError, err := s.client.Todos.AddOne(
 			&todos.AddOneParams{

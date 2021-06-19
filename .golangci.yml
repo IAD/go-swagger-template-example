@@ -51,9 +51,45 @@ linters:
     - maligned
     - funlen
     - godot
+    - testpackage
+    - wsl
+    - dupl
+    - goerr113
+    - interfacer
+    - gochecknoglobals
+    - nlreturn
+    - wrapcheck
+    - errorlint
+    - cyclop
+    - ifshort
   fast: false
 
 linters-settings:
   govet:
     # report about shadowed variables
     check-shadowing: true
+  gocognit:
+    min-complexity: 70
+  gocyclo:
+    min-complexity: 60
+  errcheck:
+    check-blank: true
+    exclude: .golangci.errcheck.excludes.txt
+    check-type-assertions: true
+  exhaustive:
+    # check switch statements in generated files also
+    check-generated: false
+    # indicates that switch statements are to be considered exhaustive if a
+    # 'default' case is present, even if all enum members aren't listed in the
+    # switch
+    default-signifies-exhaustive: false
+  exhaustivestruct:
+    struct-patterns:
+#      - '*.Context'
+#      - '*.HTTPClient'
+
+issues:
+  exclude:
+    - Context, HTTPClient are missing
+    - HTTPClient is missing
+    - lock is missing in
